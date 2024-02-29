@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { Dialog, Disclosure } from '@headlessui/react'
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 import { Bars3Icon, MinusSmallIcon, PlusSmallIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import {
   ArrowPathIcon,
@@ -148,9 +150,7 @@ export default function Header(){
         ))}
       </div>
       <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-        <a href="#" className="text-sm font-semibold leading-6 text-white">
-          Log in <span aria-hidden="true">&rarr;</span>
-        </a>
+        <ConnectButton />
       </div>
     </nav>
     <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -188,12 +188,6 @@ export default function Header(){
               ))}
             </div>
             <div className="py-6">
-              <a
-                href="#"
-                className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-              >
-                Log in
-              </a>
             </div>
           </div>
         </div>

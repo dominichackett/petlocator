@@ -3,14 +3,17 @@ import { useState } from 'react'
 import { Dialog, Disclosure } from '@headlessui/react'
 import { Bars3Icon, MinusSmallIcon, PlusSmallIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import Header from '@/components/Header/Header'
+import Footer from '@/components/Footer/Footer'
 import {
-  ArrowPathIcon,
+  
   CheckIcon,
   CloudArrowUpIcon,
-  Cog6ToothIcon,
-  FingerPrintIcon,
+  IdentificationIcon,
+  ChatBubbleBottomCenterIcon,
+  VideoCameraIcon,
   LockClosedIcon,
   ServerIcon,
+  CircleStackIcon
 } from '@heroicons/react/20/solid'
 
 const navigation = [
@@ -20,97 +23,73 @@ const navigation = [
 ]
 const features = [
   {
-    name: 'Push to deploy.',
+    name: 'Fleek IPFS Storage.',
     description: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit aute id magna.',
     icon: CloudArrowUpIcon,
   },
   {
-    name: 'SSL certificates.',
+    name: 'Secured by Blockchain.',
     description: 'Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.',
     icon: LockClosedIcon,
   },
   {
-    name: 'Simple queues.',
+    name: 'Tableland Database.',
     description: 'Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus.',
-    icon: ArrowPathIcon,
+    icon: CircleStackIcon,
   },
   {
-    name: 'Advanced security.',
+    name: 'Video Calls.',
     description: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit aute id magna.',
-    icon: FingerPrintIcon,
+    icon: VideoCameraIcon,
   },
   {
-    name: 'Powerful API.',
+    name: 'Chat/Messaging.',
     description: 'Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.',
-    icon: Cog6ToothIcon,
+    icon: ChatBubbleBottomCenterIcon,
   },
   {
-    name: 'Database backups.',
+    name: 'Pet Data.',
     description: 'Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. ',
-    icon: ServerIcon,
+    icon: IdentificationIcon,
   },
 ]
 const tiers = [
   {
-    name: 'Hobby',
-    id: 'tier-hobby',
+    name: 'Single',
+    id: 'single-pet',
     href: '#',
     priceMonthly: '$19',
-    description: "The perfect plan if you're just getting started with our product.",
-    features: ['25 products', 'Up to 10,000 subscribers', 'Advanced analytics', '24-hour support response time'],
+    description: "The perfect plan for the single pet owner.",
+    features: ['1 Pet', 'Video calls', 'Chat', 'Pet bio data','24-hour support response time'],
     featured: false,
   },
   {
-    name: 'Enterprise',
-    id: 'tier-enterprise',
+    name: 'Multi Pet',
+    id: 'five-pets',
     href: '#',
     priceMonthly: '$49',
-    description: 'Dedicated support and infrastructure for your company.',
+    description: 'Support for up to 5 Pets.',
     features: [
-      'Unlimited products',
-      'Unlimited subscribers',
-      'Advanced analytics',
-      'Dedicated support representative',
-      'Marketing automations',
-      'Custom integrations',
+      '5 Pets',
+      'Video calls',
+      'Chats',
+      'Pet bio data',
+      '24-hour support response time',
+      'Dedicated support',
+      'Pet insurance coverage'
     ],
     featured: true,
   },
 ]
 const faqs = [
   {
-    question: "What's the best thing about Switzerland?",
+    question: "How does Pet Locator work?",
     answer:
-      "I don't know, but the flag is a big plus. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cupiditate laboriosam fugiat.",
+      "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cupiditate laboriosam fugiat.",
   },
   // More questions...
 ]
-const footerNavigation = {
-  solutions: [
-    { name: 'Marketing', href: '#' },
-    { name: 'Analytics', href: '#' },
-    { name: 'Commerce', href: '#' },
-    { name: 'Insights', href: '#' },
-  ],
-  support: [
-    { name: 'Pricing', href: '#' },
-    { name: 'Documentation', href: '#' },
-    { name: 'Guides', href: '#' },
-    { name: 'API Status', href: '#' },
-  ],
-  company: [
-    { name: 'About', href: '#' },
-    { name: 'Blog', href: '#' },
-    { name: 'Jobs', href: '#' },
-    { name: 'Press', href: '#' },
-    { name: 'Partners', href: '#' },
-  ],
-  legal: [
-    { name: 'Claim', href: '#' },
-    { name: 'Privacy', href: '#' },
-    { name: 'Terms', href: '#' },
-  ],
-}
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -172,7 +151,7 @@ export default function Home() {
             </div>
 
             {/* Logo cloud */}
-            <div className="mx-auto grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
+            <div className="mx-auto grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-4">
               <img
                 className="col-span-2 max-h-48 w-full object-contain lg:col-span-1"
                 src="images/filecoin.png"
@@ -181,33 +160,28 @@ export default function Home() {
                 height={148}
               />
               <img
-                className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-                src="https://tailwindui.com/img/logos/158x48/reform-logo-white.svg"
-                alt="Reform"
+                className="col-span-2 max-h-48 w-full object-contain lg:col-span-1"
+                src="images/tableland.png"
+                alt="Tableland"
                 width={158}
-                height={48}
+                height={148}
               />
               <img
-                className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-                src="https://tailwindui.com/img/logos/158x48/tuple-logo-white.svg"
-                alt="Tuple"
+                className="col-span-2 max-h-48 w-full object-contain lg:col-span-1"
+                src="images/pushlogo.png"
+                alt="Push Protocol"
                 width={158}
-                height={48}
+                height={148}
               />
               <img
-                className="col-span-2 max-h-12 w-full object-contain sm:col-start-2 lg:col-span-1"
-                src="https://tailwindui.com/img/logos/158x48/savvycal-logo-white.svg"
-                alt="SavvyCal"
+                className="col-span-2 max-h-48 w-full object-contain lg:col-span-1"
+                src="images/fleek-logo.png"
+                alt="Fleek"
                 width={158}
-                height={48}
+                height={148}
               />
-              <img
-                className="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1"
-                src="https://tailwindui.com/img/logos/158x48/statamic-logo-white.svg"
-                alt="Statamic"
-                width={158}
-                height={48}
-              />
+              
+              
             </div>
           </div>
           <div
@@ -229,27 +203,14 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl sm:text-center">
               <h2 className="text-base font-semibold leading-7 text-indigo-600">Everything you need</h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">No server? No problem.</p>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Pet Locator Features.</p>
               <p className="mt-6 text-lg leading-8 text-gray-600">
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque,
                 iste dolor cupiditate blanditiis.
               </p>
             </div>
           </div>
-          <div className="relative overflow-hidden pt-16">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-              <img
-                src="https://tailwindui.com/img/component-images/project-app-screenshot.png"
-                alt="App screenshot"
-                className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
-                width={2432}
-                height={1442}
-              />
-              <div className="relative" aria-hidden="true">
-                <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white pt-[7%]" />
-              </div>
-            </div>
-          </div>
+         
           <div className="mx-auto mt-16 max-w-7xl px-6 sm:mt-20 md:mt-24 lg:px-8">
             <dl className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
               {features.map((feature) => (
@@ -311,7 +272,7 @@ export default function Home() {
                 </blockquote>
                 <figcaption className="mt-8 text-base">
                   <div className="font-semibold text-white">Judith Black</div>
-                  <div className="mt-1 text-gray-400">CEO of Tuple</div>
+                  <div className="mt-1 text-gray-400">Pet Owner</div>
                 </figcaption>
               </figure>
             </div>
@@ -454,74 +415,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-32 bg-gray-900 sm:mt-56" aria-labelledby="footer-heading">
-        <h2 id="footer-heading" className="sr-only">
-          Footer
-        </h2>
-        <div className="mx-auto max-w-7xl px-6 py-16 sm:py-24 lg:px-8 lg:py-32">
-          <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-            <img
-              className="h-7"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-              alt="Company name"
-            />
-            <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-              <div className="md:grid md:grid-cols-2 md:gap-8">
-                <div>
-                  <h3 className="text-sm font-semibold leading-6 text-white">Solutions</h3>
-                  <ul role="list" className="mt-6 space-y-4">
-                    {footerNavigation.solutions.map((item) => (
-                      <li key={item.name}>
-                        <a href={item.href} className="text-sm leading-6 text-gray-300 hover:text-white">
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold leading-6 text-white">Support</h3>
-                  <ul role="list" className="mt-6 space-y-4">
-                    {footerNavigation.support.map((item) => (
-                      <li key={item.name}>
-                        <a href={item.href} className="text-sm leading-6 text-gray-300 hover:text-white">
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="md:grid md:grid-cols-2 md:gap-8">
-                <div>
-                  <h3 className="text-sm font-semibold leading-6 text-white">Company</h3>
-                  <ul role="list" className="mt-6 space-y-4">
-                    {footerNavigation.company.map((item) => (
-                      <li key={item.name}>
-                        <a href={item.href} className="text-sm leading-6 text-gray-300 hover:text-white">
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold leading-6 text-white">Legal</h3>
-                  <ul role="list" className="mt-6 space-y-4">
-                    {footerNavigation.legal.map((item) => (
-                      <li key={item.name}>
-                        <a href={item.href} className="text-sm leading-6 text-gray-300 hover:text-white">
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+     <Footer />
     </div>
   )
 }
