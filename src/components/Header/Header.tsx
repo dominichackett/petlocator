@@ -15,9 +15,9 @@ import {
 } from '@heroicons/react/20/solid'
 
 const navigation = [
-  { name: 'Product', href: '#' },
-  { name: 'Features', href: '#' },
-  { name: 'Company', href: '#' },
+  { name: 'Home', href: '/',secure:false },
+  { name: 'Dashboard', href: '/dashboard',secure:true },
+  { name: 'Track', href: '/track',secure:false },
 ]
 const features = [
   {
@@ -126,8 +126,8 @@ export default function Header(){
         <a href="#" className="-m-1.5 p-1.5">
           <span className="sr-only">Your Company</span>
           <img
-            className="h-8 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+            className="h-10 w-auto"
+            src="/images/petlogow.png"
             alt=""
           />
         </a>
@@ -160,8 +160,8 @@ export default function Header(){
           <a href="#" className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
             <img
-              className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+              className="h-10 w-auto"
+              src="/images/petlogow.png"
               alt=""
             />
           </a>
