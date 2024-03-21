@@ -2,26 +2,14 @@ import {useForm  } from "react-hook-form";
 import {useState,useRef,useEffect} from 'react';
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import Notification from "../Notification/Notification"
-//import { Web3Storage, File } from "web3.storage";
-import { Database } from "@tableland/sdk";
-//import { useWalletClient,useAccount } from "wagmi";
-//import { insertXFund } from "../../tableland/tableland";
-
-
+import { fleekUpLoad } from "@/utils/fleek";
+import { useAccount } from 'wagmi'
 export default function Profile(props:any) {
 
-    const petPicRef = useRef("");
+    const profilePicRef = useRef("");
    
-/*  const { address, isConnecting, isDisconnected } = useAccount()
-  const { chain } = useNetwork()
-  const signer = useSigner();
+    const account = useAccount()
 
-  const { data: walletClient } = useWalletClient()
-  const petPicRef = useRef("");
-  c const [storage] = useState(
-    new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_STORAGE_KEY })
-  );
- */
    
   const [preview, setPreview] = useState('')
   const [selectedFile, setSelectedFile] = useState(undefined)
@@ -47,11 +35,11 @@ export default function Profile(props:any) {
   }
 
 
-  const XFundPicClicked = (e) => {
-    petPicRef.current.click(); 
+  const profilePicClicked = (e) => {
+    profilePicRef.current.click(); 
   }; 
 
-  const XFundPicSelected = async (e:any) => {
+  const profilePicSelected = async (e:any) => {
     if (!e.target.files || e.target.files.length === 0) {
       setSelectedFile(undefined)
       return
@@ -84,7 +72,7 @@ export default function Profile(props:any) {
 
     if(!selectedFile)
     {
-      setNotificationTitle("Create XFund")
+      setNotificationTitle("Save Profile")
       setNotificationDescription("Please select an image.")
       setDialogType(2) //Error
       setShow(true)    
@@ -94,8 +82,8 @@ export default function Profile(props:any) {
 
     setIsSaving(true);
 
-    setNotificationTitle("Create XFund")
-    setNotificationDescription("Uploading XFund Image.")
+    setNotificationTitle("Save Profile")
+    setNotificationDescription("Uploading Profile Image.")
     setDialogType(3) //Information
     setShow(true)     
    
@@ -103,44 +91,18 @@ export default function Profile(props:any) {
   
     try 
     { 
-       const cid = await storage.put([new File([selectedFile],filename.current)]);
-       setShow(false)
-       const imageurl = "https://"+cid+".ipfs.w3s.link/"+filename.current
-       const startdate = new Date().getTime()
 
-       setNotificationTitle("Create XFund")
-       const contract = new ethers.Contract(XFundAddress, XFundABI, signer);
-       
-  
-       var  participants= data.participants.split('\n'); // Split text into an array of lines
-       const amount = ethers.utils.parseUnits(data.amount, 18);
-
-       const tx = await contract.callStatic.newChit(participants, data.cycleCount, data.frequency, data.amount,{ gasLimit: 21000000  });
-       const transaction = await contract.newChit(participants, data.cycleCount, data.frequency, data.amount,{ gasLimit: 21000000  });
-       await transaction.wait(); // Wait for the transaction to be mined
-      // Wait for the event promise to be resolved
-      // Access the transaction receipt for more information
-    const receipt = await signer.provider.getTransactionReceipt(transaction.hash);
-
-    // Access event data from the receipt (replace 'YourEventName' with your actual event name)
-    console.log(receipt)
-    const iface = new ethers.utils.Interface(XFundABI);
-    const events = iface.parseLog(receipt.logs[0]);
-   console.log(events)
-    const fundId = events.args.FundId.toNumber();
-
-       console.log(events.args); // Access event arguments
-
-       await insertXFund(fundId,address,data.name,parseInt(data.frequency),startdate,imageurl,parseInt(data.amount),parseInt(data.cycleCount),data.participants)
-
-       setNotificationDescription("XFund Successfully Created")
+      
+       const result = await fleekUpLoad(account.address,selectedFile)
+       console.log(result)
+       setNotificationDescription("Profile Successfully Saved")
        setDialogType(1) //Success
        setShow(true)    
        setIsSaving(false)
  
     }catch(error){
 
-      setNotificationTitle("Create XFund")
+      setNotificationTitle("Save Profile")
       setNotificationDescription(error.message)
       setDialogType(2) //Error
       setShow(true)    
@@ -149,24 +111,7 @@ export default function Profile(props:any) {
     }  
 
   }
-  function validateParticipants(value:any){
-    console.log(value)
-
-    var rowCount = (value.match(/\n/g) || []).length + 1;
-    var linesArray = value.split('\n'); // Split text into an array of lines
- 
-
-    if(rowCount < 2)
-    return false
-
-    const isValid = linesArray.every((address:any) => {
-      return ethers.utils.isAddress(address);
-    });
-
-    return isValid
-      
-
-  }
+  
   const { register,setValue, formState: { errors }, handleSubmit } = useForm();
   return (
  <div className="px-4 m-4 w-full">
@@ -221,11 +166,11 @@ export default function Profile(props:any) {
                   <button
                     type="button"
                     className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-my-blue"
-                    onClick={XFundPicClicked}
+                    onClick={profilePicClicked}
                   >
                     Change
                   </button>
-                  <input type="file"   accept="image/png, image/jpeg"  ref={petPicRef} hidden="true" onChange={XFundPicSelected} />
+                  <input type="file"   accept="image/png, image/jpeg"  ref={profilePicRef} hidden="true" onChange={profilePicSelected} />
 
                 </div>
               </div>
@@ -237,17 +182,16 @@ export default function Profile(props:any) {
               </label>
               <div className="mt-1">
                 <textarea
-                  id="participants"
-                  name="participants"
+                  id="description"
+                  name="description"
                   rows={3}
                   className="shadow-sm focus:ring-my-blue focus:border-my-blue block w-full h-40 sm:text-sm border border-gray-300 rounded-md"
-                  {...register("participants", { required: true ,validate:value =>{return validateParticipants(value)}})} 
+                  {...register("description", { required: true })} 
 
                 />
               </div>
-              {errors.participants?.type === 'required' && <span className="text-sm text-red-700">Participants are required</span>}
-              {errors.participants?.type === 'validate' && <span className="text-sm text-red-700">2 or more Participants are required </span>}
-
+              {errors.participants?.type === 'required' && <span className="text-sm text-red-700">Description is required</span>}
+              
             </div>
 
            
