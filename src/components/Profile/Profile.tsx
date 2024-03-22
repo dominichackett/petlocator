@@ -2,8 +2,11 @@ import {useForm  } from "react-hook-form";
 import {useState,useRef,useEffect} from 'react';
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import Notification from "../Notification/Notification"
-import { fleekUpLoad } from "@/utils/fleek";
+import { project,uploadToIPFS } from "@/utils/fleek";
 import { useAccount } from 'wagmi'
+import { Database } from "@tableland/sdk";
+import { grantAccess,queryProfile,insertProfile,updateProfile } from "@/app/tableland/tableland";
+import { providers } from 'ethers'
 export default function Profile(props:any) {
 
     const profilePicRef = useRef("");
@@ -13,7 +16,9 @@ export default function Profile(props:any) {
    
   const [preview, setPreview] = useState('')
   const [selectedFile, setSelectedFile] = useState(undefined)
- 
+  const [profileExist,setProfileExist] = useState(false)
+  const [gotProfile,setGotProfile] = useState(false)
+  const [profile,setProfile] = useState({})
   // NOTIFICATIONS functions
    const [notificationTitle, setNotificationTitle] = useState();
    const [notificationDescription, setNotificationDescription] = useState();
@@ -52,7 +57,36 @@ export default function Profile(props:any) {
     }
 
     
-  
+    useEffect(()=>{
+      async function getProfile()
+      {
+         const _profile = await queryProfile(account.address)
+         if(_profile.length > 0)
+        {
+           setGotProfile(true)
+           setProfileExist(true)
+           setProfile(_profile[0])
+           setValue("name",_profile[0].name)
+           setValue("description",_profile[0].description)
+           const image =  await fetch(_profile[0].photo)
+           if(image.ok)
+           {
+                console.log(image)
+                 setSelectedFile(await image.blob())
+                 // const objectUrl = URL.createObjectURL(await image.blob())
+                 //setPreview(objectUrl)
+           }   
+          else
+        {
+          setGotProfile(true)
+          setProfileExist(false)
+        }   
+      }
+    } 
+      
+      if(account?.address)
+      getProfile()
+    },[])
     
     useEffect(() => {
       if (!selectedFile) {
@@ -91,10 +125,38 @@ export default function Profile(props:any) {
   
     try 
     { 
-
       
-       const result = await fleekUpLoad(account.address,selectedFile)
-       console.log(result)
+    //  const provider = new providers.Web3Provider(window.ethereum)
+ 
+      //const _signer = provider.getSigner(account.address) 
+      //const db = new Database({_signer})  
+      //console.log(_signer.getAddress())     
+      //await grantAccess(db)
+      
+      // return
+      let result
+      let url
+      if(filename.current)
+      {
+        result = await  uploadToIPFS(filename.current,selectedFile)
+        url = `https://${result.cid.toV1().toString()}.ipfs.cf-ipfs.com`
+       
+      }else
+      {
+         url = profile.photo
+      }
+        // console.log(result.cid)
+      ///console.log(result.cid.toV1())
+       
+       ///console.log(url)
+       if(profileExist)
+       {
+          await updateProfile(data.name,url,data.description,account.address)
+       }else
+       {
+          await insertProfile(data.name,url,data.description,account.address)
+       }  
+
        setNotificationDescription("Profile Successfully Saved")
        setDialogType(1) //Success
        setShow(true)    
@@ -205,8 +267,9 @@ export default function Profile(props:any) {
           
           <button
             type="submit"
+           
             className="cursor-pointer ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-700 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-my-blue-light"
-          disabled={isSaving}
+          disabled={isSaving || !gotProfile}
           >
             Save
           </button>

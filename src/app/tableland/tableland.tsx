@@ -1,10 +1,12 @@
 import { Database } from "@tableland/sdk";
-import { ethers } from "ethers";
+import {ethers} from "ethers"
 export const contactsTable ="contacts_314159_729"
 export const petsTable ="pets_314159_730"
 export const profilesTable = "profiles_314159_731"
 
 const wallet = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY)
+
+
 const provider = new ethers.providers.JsonRpcProvider(
     "https://api.calibration.node.glif.io/rpc/v1"
   );
@@ -13,7 +15,7 @@ const signer = wallet.connect(provider);
 
 const db = new Database({signer})  
 
-
+console.log(wallet.address)
 export const queryContacts = async(owner:string)=>{
     try {
     const { results } = await db.prepare(`SELECT * FROM ${contactsTable} where owner='${owner}'  order by lastname,firstname;`).all();
@@ -87,8 +89,8 @@ const { meta: insert } = await db
 export const updateProfile =async (name:string,photo:string,description:string,id:string) => {
     // Insert a row into the table
 const { meta: insert } = await db
-.prepare(`Update ${profilesTable} set id=?, name=?,photo=?,description=? where id=?;`)
-.bind(id,name,photo,description)
+.prepare(`Update ${profilesTable} set  name=?,photo=?,description=? where id=?;`)
+.bind(name,photo,description,id)
 .run();
 
 // Wait for transaction finality
@@ -96,39 +98,39 @@ const { meta: insert } = await db
 }
 
 
-export const grantAccess = async ()=>{
+export const grantAccess = async (_db:any)=>{
     try{
-         await db.prepare(`GRANT
+         await _db.prepare(`GRANT
         INSERT,
         UPDATE,
         DELETE
       ON
         ${contactsTable}
       TO
-        '0x53B382216EB5CDC7b83455bb9D5d7E4202F21f56';`).run();
+        '0x5858769800844ab75397775Ca2Fa87B270F7FbBe';`).run();
     
-         await db.prepare(`GRANT
+         await _db.prepare(`GRANT
         INSERT,
         UPDATE,
         DELETE
       ON
         ${petsTable}
       TO
-        '0x53B382216EB5CDC7b83455bb9D5d7E4202F21f56';`).run();
+        '0x5858769800844ab75397775Ca2Fa87B270F7FbBe';`).run();
 
 
-        await db.prepare(`GRANT
+        await _db.prepare(`GRANT
         INSERT,
         UPDATE,
         DELETE
       ON
         ${profilesTable}
       TO
-        '0x53B382216EB5CDC7b83455bb9D5d7E4202F21f56';`).run();   
+        '0x5858769800844ab75397775Ca2Fa87B270F7FbBe';`).run();   
     
     }
     catch(error:any)
     {
-        
+        console.log(error)
     }
 }
