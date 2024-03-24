@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState ,useEffect,useRef} from 'react'
 import { Dialog, Disclosure } from '@headlessui/react'
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
@@ -10,6 +10,9 @@ import AddContact from '@/components/AddContact/AddContact'
 import Messages from '@/components/Messages/Messages'
 import Profile from '@/components/Profile/Profile'
 import VideoCall from '@/components/VideoCall/VideoCall'
+import { queryProfile } from '../tableland/tableland'
+import { useAccount } from 'wagmi'
+
 import {
     Bars3Icon,
     BellIcon,
@@ -43,10 +46,20 @@ function classNames(...classes) {
 }
 
 export default function Dashboard() {
+  const [preview, setPreview] = useState('')
+  const [selectedFile, setSelectedFile] = useState(undefined)
+  const [profileExist,setProfileExist] = useState(false)
+  const [gotProfile,setGotProfile] = useState(false)
+  const [profile,setProfile] = useState({})
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedMenuItem,setSelectedMenuItem] = useState("Pets")
   const [showPetForm,setShowPetForm] = useState(false)
   const [showContactForm,setShowContactForm] = useState(false)
+
+  const profilePicRef = useRef("");
+   
+  const account = useAccount()
+
   const menuClicked = (item:any) =>{
      setSelectedMenuItem(item)
   }
@@ -58,6 +71,50 @@ export default function Dashboard() {
   const addContactClicked = (value:any) =>{
     setShowContactForm(value)
   }
+
+  useEffect(()=>{
+    async function getProfile()
+    {
+       const _profile = await queryProfile(account.address)
+       if(_profile.length > 0)
+      {
+         setGotProfile(true)
+         setProfileExist(true)
+         setProfile(_profile[0])
+        
+         const image =  await fetch(_profile[0].photo)
+         if(image.ok)
+         {
+              console.log(image)
+               setSelectedFile(await image.blob())
+               // const objectUrl = URL.createObjectURL(await image.blob())
+               //setPreview(objectUrl)
+         }   
+        else
+      {
+        setGotProfile(true)
+        setProfileExist(false)
+      }   
+    }
+  } 
+    
+    if(account?.address)
+    getProfile()
+  },[account?.address])
+
+  useEffect(() => {
+    if (!selectedFile) {
+        setPreview('')
+        return
+    }
+  
+    const objectUrl = URL.createObjectURL(selectedFile)
+    setPreview(objectUrl)
+  
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [selectedFile])
+  
   return (
     <main>
     {/* Header */}
@@ -113,11 +170,11 @@ export default function Dashboard() {
                    >
                      <img
                        className="h-8 w-8 rounded-full bg-indigo-700"
-                       src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                       src={preview ? preview : "/images/profile.png"}
                        alt=""
                      />
                      <span className="sr-only">Your profile</span>
-                     <span aria-hidden="true">Tom Cook</span>
+                     <span aria-hidden="true">{profile?.name}</span>
                    </a>
                  </li>
                </ul>
