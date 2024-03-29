@@ -2,26 +2,20 @@ import {useForm  } from "react-hook-form";
 import {useState,useRef,useEffect} from 'react';
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import Notification from "../Notification/Notification"
-//import { Web3Storage, File } from "web3.storage";
 import { Database } from "@tableland/sdk";
-//import { useWalletClient,useAccount } from "wagmi";
-//import { insertXFund } from "../../tableland/tableland";
-
+import { providers } from 'ethers'
+import { useAccount } from 'wagmi'
+import { ethers } from "ethers";
+import { tagContractABI,tagContractAddress } from "@/contracts/contracts";
+import { uploadToIPFS } from "@/utils/fleek";
+import { insertPet,alterTable } from "@/app/tableland/tableland";
 
 export default function AddPet(props:any) {
 
     const petPicRef = useRef("");
-   
-/*  const { address, isConnecting, isDisconnected } = useAccount()
-  const { chain } = useNetwork()
-  const signer = useSigner();
+    const account = useAccount()
 
-  const { data: walletClient } = useWalletClient()
-  const petPicRef = useRef("");
-  c const [storage] = useState(
-    new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3_STORAGE_KEY })
-  );
- */
+
    
   const [preview, setPreview] = useState('')
   const [selectedFile, setSelectedFile] = useState(undefined)
@@ -47,11 +41,11 @@ export default function AddPet(props:any) {
   }
 
 
-  const XFundPicClicked = (e) => {
+  const PetPicClicked = (e) => {
     petPicRef.current.click(); 
   }; 
 
-  const XFundPicSelected = async (e:any) => {
+  const PetPicSelected = async (e:any) => {
     if (!e.target.files || e.target.files.length === 0) {
       setSelectedFile(undefined)
       return
@@ -84,7 +78,7 @@ export default function AddPet(props:any) {
 
     if(!selectedFile)
     {
-      setNotificationTitle("Create XFund")
+      setNotificationTitle("Add Pet")
       setNotificationDescription("Please select an image.")
       setDialogType(2) //Error
       setShow(true)    
@@ -94,8 +88,8 @@ export default function AddPet(props:any) {
 
     setIsSaving(true);
 
-    setNotificationTitle("Create XFund")
-    setNotificationDescription("Uploading XFund Image.")
+    setNotificationTitle("Add Pet")
+    setNotificationDescription("Uploading Pet Image.")
     setDialogType(3) //Information
     setShow(true)     
    
@@ -103,44 +97,60 @@ export default function AddPet(props:any) {
   
     try 
     { 
-       const cid = await storage.put([new File([selectedFile],filename.current)]);
-       setShow(false)
-       const imageurl = "https://"+cid+".ipfs.w3s.link/"+filename.current
-       const startdate = new Date().getTime()
-
-       setNotificationTitle("Create XFund")
-       const contract = new ethers.Contract(XFundAddress, XFundABI, signer);
+      
+      
+      /*const provider = new providers.Web3Provider(window.ethereum)
+ 
+      const _signer = provider.getSigner(account.address) 
+      const db = new Database({_signer})  
+      console.log(_signer.getAddress())     
+      await alterTable(db)
+      return*/
+     
+       setNotificationTitle("Add Pet")
+      const provider = new providers.Web3Provider(window.ethereum)
+      const _signer = provider.getSigner(account.address) 
+ 
+       const result = await  uploadToIPFS(filename.current,selectedFile)
+       const cid =result.cid.toV1().toString()
+       const url = `https://${cid}.ipfs.cf-ipfs.com`
        
-  
-       var  participants= data.participants.split('\n'); // Split text into an array of lines
-       const amount = ethers.utils.parseUnits(data.amount, 18);
+        setShow(false)
+        console.log(data)
 
-       const tx = await contract.callStatic.newChit(participants, data.cycleCount, data.frequency, data.amount,{ gasLimit: 21000000  });
-       const transaction = await contract.newChit(participants, data.cycleCount, data.frequency, data.amount,{ gasLimit: 21000000  });
+ 
+        setNotificationTitle("Add Pet")
+        const contract = new ethers.Contract(tagContractAddress, tagContractABI, _signer);
+      
+  
+ //export const tagContractABI = ['addUser(string memory _pname, string memory _oname, string memory _ptype, string memory _cid)public',
+    
+       const tx = await contract.callStatic.addUser(data.name,account.address, data.pettype, cid,{ gasLimit: 21000000  });
+       const transaction = await contract.addUser(data.name,account.address, data.pettype, cid,{ gasLimit: 21000000  });
        await transaction.wait(); // Wait for the transaction to be mined
       // Wait for the event promise to be resolved
       // Access the transaction receipt for more information
-    const receipt = await signer.provider.getTransactionReceipt(transaction.hash);
+    const receipt = await _signer.provider.getTransactionReceipt(transaction.hash);
 
     // Access event data from the receipt (replace 'YourEventName' with your actual event name)
     console.log(receipt)
-    const iface = new ethers.utils.Interface(XFundABI);
+    const iface = new ethers.utils.Interface(tagContractABI);
     const events = iface.parseLog(receipt.logs[0]);
    console.log(events)
-    const fundId = events.args.FundId.toNumber();
+    const tagId = events.args.tagId.toNumber();
 
        console.log(events.args); // Access event arguments
 
-       await insertXFund(fundId,address,data.name,parseInt(data.frequency),startdate,imageurl,parseInt(data.amount),parseInt(data.cycleCount),data.participants)
+       await insertPet(tagId.toString(),account.address,data.name,data.pettype,url,data.description)
 
-       setNotificationDescription("XFund Successfully Created")
+       setNotificationDescription("Pet Tag Successfully Created")
        setDialogType(1) //Success
        setShow(true)    
        setIsSaving(false)
  
     }catch(error){
 
-      setNotificationTitle("Create XFund")
+      setNotificationTitle("Add Pet")
       setNotificationDescription(error.message)
       setDialogType(2) //Error
       setShow(true)    
@@ -149,24 +159,7 @@ export default function AddPet(props:any) {
     }  
 
   }
-  function validateParticipants(value:any){
-    console.log(value)
-
-    var rowCount = (value.match(/\n/g) || []).length + 1;
-    var linesArray = value.split('\n'); // Split text into an array of lines
  
-
-    if(rowCount < 2)
-    return false
-
-    const isValid = linesArray.every((address:any) => {
-      return ethers.utils.isAddress(address);
-    });
-
-    return isValid
-      
-
-  }
   const { register,setValue, formState: { errors }, handleSubmit } = useForm();
   return (
  <div className="px-4 m-4 w-full">
@@ -205,17 +198,17 @@ export default function AddPet(props:any) {
                 Type
               </label>
               <div className="shadow-sm focus:ring-my-blue focus:border-my-blue block w-full sm:text-sm border-gray-300 rounded-md"
->                 <select id="frequency" name="frequency" className="p-2 flex-1 focus:ring-my-blue focus:border-my-blue block w-full min-w-0 rounded-none rounded-md sm:text-sm border-gray-300"
-                            {...register("frequency", { required: true})} 
+>                 <select id="pettype" name="pettype" className="p-2 flex-1 focus:ring-my-blue focus:border-my-blue block w-full min-w-0 rounded-none rounded-md sm:text-sm border-gray-300"
+                            {...register("pettype", { required: true})} 
 
                  >
         <option value="">Select...</option>
-        <option value="7">Cat</option>
-        <option value="30">Dog</option>
+        <option value="Cat">Cat</option>
+        <option value="Dog">Dog</option>
       </select>   
              
               </div>
-              {errors.frequency?.type === 'required' && <span className="text-sm text-red-700">Frequency is required</span>}
+              {errors.pettype?.type === 'required' && <span className="text-sm text-red-700">Pet type is required</span>}
 
             </div>
 
@@ -239,11 +232,11 @@ export default function AddPet(props:any) {
                   <button
                     type="button"
                     className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-my-blue"
-                    onClick={XFundPicClicked}
+                    onClick={PetPicClicked}
                   >
                     Change
                   </button>
-                  <input type="file"   accept="image/png, image/jpeg"  ref={petPicRef} hidden="true" onChange={XFundPicSelected} />
+                  <input type="file"   accept="image/png, image/jpeg"  ref={petPicRef} hidden="true" onChange={PetPicSelected} />
 
                 </div>
               </div>
@@ -255,16 +248,15 @@ export default function AddPet(props:any) {
               </label>
               <div className="mt-1">
                 <textarea
-                  id="participants"
-                  name="participants"
+                  id="description"
+                  name="description"
                   rows={3}
                   className="shadow-sm focus:ring-my-blue focus:border-my-blue block w-full h-40 sm:text-sm border border-gray-300 rounded-md"
-                  {...register("participants", { required: true ,validate:value =>{return validateParticipants(value)}})} 
+                  {...register("description", { required: true})} 
 
                 />
               </div>
-              {errors.participants?.type === 'required' && <span className="text-sm text-red-700">Participants are required</span>}
-              {errors.participants?.type === 'validate' && <span className="text-sm text-red-700">2 or more Participants are required </span>}
+              {errors.description?.type === 'required' && <span className="text-sm text-red-700">Description is required</span>}
 
             </div>
 

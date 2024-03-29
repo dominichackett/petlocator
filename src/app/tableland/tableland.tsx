@@ -18,13 +18,27 @@ const db = new Database({signer})
 console.log(wallet.address)
 export const queryContacts = async(owner:string)=>{
     try {
-    const { results } = await db.prepare(`SELECT * FROM ${contactsTable} where owner='${owner}'  order by lastname,firstname;`).all();
+    const { results } = await db.prepare(`SELECT firstname,lastname,telephone,ethaddress,${petsTable}.name FROM ${contactsTable} join ${petsTable} on petid = ${petsTable}.id where owner='${owner}'  order by lastname,firstname;`).all();
 
    return results;
 }
 catch(error:any)
 {
     return []
+}
+
+}
+
+
+export const queryContactsByPet = async(petId:string)=>{
+  try {
+  const { results } = await db.prepare(`SELECT firstname,lastname,telephone,ethaddress,${petsTable}.name FROM ${contactsTable} join ${petsTable} on petid = ${petsTable}.id where petid='${petId}'  order by lastname,firstname;`).all();
+
+ return results;
+}
+catch(error:any)
+{
+  return []
 }
 
 }
@@ -49,7 +63,7 @@ export const queryPetsByOwner = async(owner:string)=>{
 
 export const queryPetById = async(id:string)=>{
     try{
-    const { results } = await db.prepare(`SELECT * FROM ${petsTable} where tagid='${id}';`).all();
+    const { results } = await db.prepare(`SELECT * FROM ${petsTable} where id='${id}';`).all();
 
    return results;
 }
@@ -97,6 +111,40 @@ const { meta: insert } = await db
 //await insert.txn?.wait();
 }
 
+export const insertPet =async (id:string,owner:string,name:string,pettype:string,photo:string,description:string) => {
+  // Insert a row into the table
+const { meta: insert } = await db
+.prepare(`INSERT INTO ${petsTable} (id,owner, name,pettype,photo,description) VALUES (?, ?,?,?,?,?);`)
+.bind(id,owner,name,pettype,photo,description)
+.run();
+
+// Wait for transaction finality
+//await insert.txn?.wait();
+}
+
+export const insertContact =async (id:string,petid:string,owner:string,firstname:string,lastname:string,telephone:string) => {
+  // Insert a row into the table
+const { meta: insert } = await db
+.prepare(`INSERT INTO ${contactsTable} (id,petid,owner, firstname,lastname,telephone) VALUES (?, ?,?,?,?,?);`)
+.bind(id,petid,owner,firstname,lastname,telephone)
+.run();
+
+// Wait for transaction finality
+//await insert.txn?.wait();
+}
+
+export const alterTable = async(_db:any) =>{
+const { meta: insert } = await _db
+.prepare(`Alter table ${petsTable} ADD COLUMN photo text;`)
+.run();
+
+await _db.prepare(`Alter table ${petsTable} drop COLUMN pettype;`)
+.run();
+
+await _db
+.prepare(`Alter table ${petsTable} ADD COLUMN pettype text;`)
+.run();
+}
 
 export const grantAccess = async (_db:any)=>{
     try{

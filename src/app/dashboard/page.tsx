@@ -12,7 +12,7 @@ import Profile from '@/components/Profile/Profile'
 import VideoCall from '@/components/VideoCall/VideoCall'
 import { queryProfile } from '../tableland/tableland'
 import { useAccount } from 'wagmi'
-
+import { useRouter } from 'next/navigation'
 import {
     Bars3Icon,
     BellIcon,
@@ -28,6 +28,7 @@ import {
     XMarkIcon,ChatBubbleLeftIcon
   } from '@heroicons/react/24/outline'
   import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { disconnect } from 'process'
   
   const navigation = [
     { name: 'Pets', href: '#', icon: HomeIcon, current: true },
@@ -55,7 +56,7 @@ export default function Dashboard() {
   const [selectedMenuItem,setSelectedMenuItem] = useState("Pets")
   const [showPetForm,setShowPetForm] = useState(false)
   const [showContactForm,setShowContactForm] = useState(false)
-
+  const router = useRouter()
   const profilePicRef = useRef("");
    
   const account = useAccount()
@@ -100,6 +101,9 @@ export default function Dashboard() {
     
     if(account?.address)
     getProfile()
+  // if(account.status == 'disconnected')
+    //  router.push("/") 
+   
   },[account?.address])
 
   useEffect(() => {
@@ -115,6 +119,9 @@ export default function Dashboard() {
     return () => URL.revokeObjectURL(objectUrl)
   }, [selectedFile])
   
+  useEffect(()=>{
+    console.log(account.status)
+  },[])
   return (
     <main>
     {/* Header */}

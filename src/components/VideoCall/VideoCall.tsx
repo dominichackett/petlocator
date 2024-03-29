@@ -12,8 +12,9 @@ import { usePushSocket } from '../../hooks/usePushSockets';
 import { useEffect, useRef, useState } from 'react';
 import VideoPlayer from './VideoPlayer';
 import { ADDITIONAL_META_TYPE } from '@pushprotocol/restapi/src/lib/payloads/constants';
-import { useEthersSigner } from "@/utils/ethers";
+import { providers } from 'ethers'
 import { useAccount } from 'wagmi'
+import { ethers } from "ethers";
 interface VideoCallMetaDataType {
   recipientAddress: string;
   senderAddress: string;
@@ -28,7 +29,6 @@ export default function VideoCall(props:any){
     const [privateKey,setPrivatKey]  = useState()
     const account = useAccount()
     const [activeChat,setActiveChat] = useState()
-    const signer = useEthersSigner()
     const [isMicMuted, setMicMuted] = useState(false);
     const [isCameraOff, setCameraOff] = useState(false);
     const [currentCall,setCurrentCall] = useState()
@@ -187,6 +187,8 @@ export default function VideoCall(props:any){
 
     // initialize video call object
     useEffect(() => {
+      const provider = new providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner(account?.address) 
         if (!signer || !props.address) return;
     
         (async () => {
@@ -212,7 +214,7 @@ export default function VideoCall(props:any){
             setData,
           });
         })();
-      }, [signer, props.address]);
+      }, [account?.address, props.address]);
 
         // after setRequestVideoCall, if local stream is ready, we can fire the request()
   useEffect(() => {
@@ -322,7 +324,7 @@ export default function VideoCall(props:any){
   }
 
    return (
-    signer ? (
+    account?.address ? (
         <div className=" relative w-full">
         <label
           htmlFor="file"

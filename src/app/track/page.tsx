@@ -2,9 +2,12 @@
 import { useState } from 'react'
 import { Dialog,Disclosure, Tab, Transition,Menu } from '@headlessui/react'
 
-import { Bars3Icon, MinusSmallIcon, PlusSmallIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Bars3Icon, MinusSmallIcon, PlusSmallIcon, XMarkIcon ,ChatBubbleLeftIcon} from '@heroicons/react/24/outline'
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
+import Notification from '@/components/Notification/Notification'
+import { queryPetById ,queryContactsByPet} from '../tableland/tableland'
+import VideoCall from '@/components/VideoCall/VideoCall'
 import {
   
   CheckIcon,
@@ -101,7 +104,6 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [preview, setPreview] = useState('')
   const account = useAccount()
-  const signer = useEthersSigner()
   const [addressToCall,setAddressToCall] = useState()
   const [personTocall,setPersonTocall] = useState()
   const [personToMessage,setPersonToMessage] = useState()
@@ -111,7 +113,76 @@ export default function Home() {
   const [contacts,setContacts] = useState([])
   const PetTypes = ['Cat','Dog'];
 
+
+  // NOTIFICATIONS functions
+  const [notificationTitle, setNotificationTitle] = useState();
+  const [notificationDescription, setNotificationDescription] = useState();
+  const [dialogType, setDialogType] = useState(1);
+  const [show, setShow] = useState(false);
+  const close = async () => {
+setShow(false);
+};
   const [tag,setTag] = useState()
+  const tagScanned = async()=>{
+    const tagId = document.getElementById("tagid") .value
+    if(!tagId)
+    {
+      setNotificationDescription("Please enter a Tag ID")
+      setDialogType(2) 
+      setNotificationTitle("Search Tag")
+      setShow(true)
+      return
+    }
+    const _tag = await queryPetById(tagId)
+    if(_tag.length == 0 )
+    {
+      setNotificationDescription("Tag ID not found")
+      setDialogType(2) 
+      setNotificationTitle("Search Tag")
+      setShow(true)
+      return
+    }
+    setNotificationDescription("Tag ID found")
+    setDialogType(1) 
+    setNotificationTitle("Search Tag")
+    setShow(true)
+    setTag(_tag)
+    setTagFound(true)
+    setTagQueried(true)
+    setPreview(_tag[0].photo)
+    const _contacts = await queryContactsByPet(tagId)
+    setContacts(_contacts)
+  
+  }
+
+  const setCallData=(name:any,address:any)=>{
+    if(!account?.address)
+    {
+       setDialogType(2) //Error
+       setNotificationTitle("View Tag")
+       setNotificationDescription("Please login to place call.")
+       setShow(true)
+       return
+    }
+    setPersonTocall(name)
+    setAddressToCall(address)
+  }
+
+ 
+  const setMessageData=(name:any,address:any)=>{
+     
+    if(!account?.address)
+    {
+       setDialogType(2) //Error
+       setNotificationTitle("View Tag")
+       setNotificationDescription("Please login to send message.")
+       setShow(true)
+       return
+    }
+     setPersonToMessage(name)
+     setAddresToMessage(address)   
+  }
+  
   return (
     <div className="bg-white">
       {/* Header */}
@@ -211,7 +282,7 @@ export default function Home() {
 
                     </label>
 </div>
-{(signer && addressToCall)&&<VideoCall address={ownerAddress} addressToCall={addressToCall} personTocall={personTocall} caller={true} />}
+{(account?.address && addressToCall)&&<VideoCall address={account?.address} addressToCall={addressToCall} personTocall={personTocall} caller={true} />}
 <div className="mb-8">
    
         <div
@@ -260,7 +331,7 @@ export default function Home() {
     </div>
  
 <div className="mb-8">
-  {(signer && personToMessage && addressToMessage )&& <EmergencyChat address={ownerAddress} personToMessage={personToMessage} addressToMessage={addressToMessage} />}
+  {(account?.address && personToMessage && addressToMessage )&& <EmergencyChat address={account?.address} personToMessage={personToMessage} addressToMessage={addressToMessage} />}
 <h1 className="mb-4 text-3xl font-bold tracking-tight text-white">App Emergency Contacts</h1>
 
       {contacts.map((item, index) => (
@@ -271,13 +342,13 @@ export default function Home() {
           <span>{item.contact}</span>
           <div className="flex space-x-4">
             {/* Video Call Button */}
-            <button className="flex items-center p-2 bg-red-500 text-white rounded-md" onClick={()=>setCallData(item.contact,item.contactAddress)}>
+            <button className="flex items-center p-2 bg-red-500 text-white rounded-md" onClick={()=>setCallData(`${item.firstname} ${item.lastname}`,item.ethaddress)}>
               <VideoCameraIcon className="w-5 h-5 mr-2" /> {/* Adjust icon size and spacing */}
               Video Call
             </button>
 
             {/* Message Button */}
-            <button className="flex items-center p-2 bg-green-500 text-white rounded-md" onClick={()=>setMessageData(item.contact,item.contactAddress)}>
+            <button className="flex items-center p-2 bg-green-500 text-white rounded-md" onClick={()=>setMessageData(`${item.firstname} ${item.lastname}`,item.ethaddress)}>
               <ChatBubbleLeftIcon className="w-5 h-5 mr-2" /> {/* Adjust icon size and spacing */}
               Message
             </button>
@@ -341,8 +412,8 @@ export default function Home() {
               </label>
               <div className="mt-2">
               <textarea
-                  id="address"
-                  name="address"
+                  id="description"
+                  name="description"
                   rows={20}
                   value={tag?.description}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -426,6 +497,13 @@ export default function Home() {
 
       {/* Footer */}
      <Footer />
+     <Notification
+        type={dialogType}
+        show={show}
+        close={close}
+        title={notificationTitle}
+        description={notificationDescription}
+      />
     </div>
   )
 }

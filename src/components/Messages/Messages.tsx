@@ -17,11 +17,11 @@ export default function Messages(props:any){
            //   setAccount(`eip155:${}`);
              // setActiveChat(props?.addressToMessage)
              // setSigner(web3Provider?.getSigner())         
-           const user = await PushAPI.user.get({ account: `eip155:${account}`, env:"staging" });
+           const user = await PushAPI.user.get({ account: `eip155:${account.address}`, env:"staging" });
                  if (user?.encryptedPrivateKey) {
                      const response = await PushAPI.chat.decryptPGPKey({
                          encryptedPGPPrivateKey: (user as IUser).encryptedPrivateKey,
-                         account: account,
+                         account: account.address,
                          signer: signer,
                          env:"staging",
                          toUpgrade: true,
@@ -31,13 +31,14 @@ export default function Messages(props:any){
          
        
         }  
-       
+         
+        if(account?.address)
           setup()
-      },[])
+      },[account?.address])
 
     return (
         <ChatAndNotificationWidget
-          account={`eip155:${account}`}
+          account={`eip155:${account?.address}`}
           signer={signer}
           env="staging"
           activeTab={PUSH_TABS.CHATS}
