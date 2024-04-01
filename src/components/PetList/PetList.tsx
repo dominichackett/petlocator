@@ -1,5 +1,7 @@
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/20/solid'
-
+import { queryPetsByOwner } from '@/app/tableland/tableland'
+import { useAccount } from 'wagmi'
+import { useEffect,useState } from 'react'
 const people = [
   {
     name: 'Jane Cooper',
@@ -14,50 +16,43 @@ const people = [
 ]
 
 export default function PetList(props:any) {
+  const account = useAccount()
+  const [pets,setPets] = useState([])
+  useEffect(()=>{
+    async function getPets(){
+      const _pets = await queryPetsByOwner(account?.address)
+      console.log(_pets)
+      setPets(_pets)
+     }
+    if(account?.address)
+      getPets()
+  },[account])
+
   return (
     <div>
       <button onClick={()=>props.showpetform(true)} className='text-white bg-indigo-700 p-3 m-4 rounded-md hover:bg-indigo-500'>Add Pet</button>
     <ul role="list" className="m-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {people.map((person) => (
+      {pets.map((pet) => (
         <li
-          key={person.email}
+          key={pet.id}
           className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow"
         >
           <div className="flex flex-1 flex-col p-8">
-            <img className="mx-auto h-32 w-32 flex-shrink-0 rounded-full" src={person.imageUrl} alt="" />
-            <h3 className="mt-6 text-sm font-medium text-gray-900">{person.name}</h3>
+            <img className="mx-auto h-32 w-32 flex-shrink-0 rounded-full" src={pet.photo} alt="" />
+            <h3 className="mt-6 text-sm font-medium text-gray-900">{pet.name}</h3>
             <dl className="mt-1 flex flex-grow flex-col justify-between">
-              <dt className="sr-only">Title</dt>
-              <dd className="text-sm text-gray-500">{person.title}</dd>
-              <dt className="sr-only">Role</dt>
+              <dt className="sr-only">Id</dt>
+              <dd className="text-sm text-gray-500">{pet.id}</dd>
+              <dt className="sr-only">Type</dt>
               <dd className="mt-3">
                 <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                  {person.role}
+                  {pet.pettype}
                 </span>
               </dd>
             </dl>
           </div>
           <div>
-            <div className="-mt-px flex divide-x divide-gray-200">
-              <div className="flex w-0 flex-1">
-                <a
-                  href={`mailto:${person.email}`}
-                  className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
-                >
-                  <EnvelopeIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                  Email
-                </a>
-              </div>
-              <div className="-ml-px flex w-0 flex-1">
-                <a
-                  href={`tel:${person.telephone}`}
-                  className="relative inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-br-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
-                >
-                  <PhoneIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                  Call
-                </a>
-              </div>
-            </div>
+          
           </div>
         </li>
       ))}

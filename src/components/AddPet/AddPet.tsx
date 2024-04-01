@@ -125,8 +125,8 @@ export default function AddPet(props:any) {
   
  //export const tagContractABI = ['addUser(string memory _pname, string memory _oname, string memory _ptype, string memory _cid)public',
     
-       const tx = await contract.callStatic.addUser(data.name,account.address, data.pettype, cid,{ gasLimit: 21000000  });
-       const transaction = await contract.addUser(data.name,account.address, data.pettype, cid,{ gasLimit: 21000000  });
+       const tx = await contract.callStatic.addUser(data.name,account.address, data.pettype, cid);
+       const transaction = await contract.addUser(data.name,account.address, data.pettype, cid);
        await transaction.wait(); // Wait for the transaction to be mined
       // Wait for the event promise to be resolved
       // Access the transaction receipt for more information
@@ -135,7 +135,8 @@ export default function AddPet(props:any) {
     // Access event data from the receipt (replace 'YourEventName' with your actual event name)
     console.log(receipt)
     const iface = new ethers.utils.Interface(tagContractABI);
-    const events = iface.parseLog(receipt.logs[0]);
+
+    const events = iface.parseLog(receipt.logs[2]);
    console.log(events)
     const tagId = events.args.tagId.toNumber();
 

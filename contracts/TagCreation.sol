@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -101,16 +101,16 @@ contract TagCreation is ReentrancyGuard, ERC721Holder {
     function addUser(string memory _pname, string memory _oname, string memory _ptype, string memory _cid)public  {
         tagId ++;
         
-        createPetTag(msg.sender, tagId, _cid);
-        address account = createPetTagAccount(tagId);
-        users[msg.sender] = PetDetails(_pname, _oname, _ptype, msg.sender, tagId, account);
+       createPetTag(msg.sender, tagId, _cid);
+//        address account = createPetTagAccount(tagId);
+        users[msg.sender] = PetDetails(_pname, _oname, _ptype, msg.sender, tagId, msg.sender);
         tagIdMapping[tagId] = msg.sender;
 
-        emit NewTag(msg.sender,tagId,account);
+        emit NewTag(msg.sender,tagId,msg.sender);
 
     }
 
-    function addEmergencyContacts( uint _tagId, address _contact1, uint _phoneNumber1, address _contact2, uint _phoneNumber2, string memory currency) internal {
+    function addEmergencyContacts( uint _tagId, address _contact1, uint _phoneNumber1, address _contact2, uint _phoneNumber2, string memory currency) external {
 
         require(tagIdMapping[_tagId] == msg.sender, "User doesnt hold the tag ID");
         EContacts[_tagId] = EmergencyContact(_contact1,_phoneNumber1,_contact2,_phoneNumber2);
