@@ -111,12 +111,9 @@ export default function AddContact(props:any) {
 
           await insertContact(data.ethaddress,data.petid,account.address,data.firstname,data.lastname,data.telephone)
   
-         setNotificationDescription("Contact Successfully Created")
-         setDialogType(1) //Success
-         setShow(true)    
+        
          setIsSaving(false)
-         props.showcontactform(false)
-   
+         props.showcontactform(false,true)   
       }catch(error){
   
         setNotificationTitle("Add Contact")
@@ -266,7 +263,7 @@ export default function AddContact(props:any) {
           <button
             type="button"
             className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-my-blue"
-            onClick={()=>props.showcontactform(false)}
+            onClick={()=>props.showcontactform(false,false)}
           >
             Cancel
           </button>

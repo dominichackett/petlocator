@@ -9,7 +9,8 @@ const VideoPlayer = ({ stream, isMuted }: VideoPlayerPropsType) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (videoRef.current) {
+    if (videoRef.current && stream) {
+      console.log("Video")
       videoRef.current.srcObject = stream;
       videoRef.current.play();
     }

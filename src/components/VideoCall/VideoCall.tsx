@@ -28,6 +28,8 @@ const env = ENV.STAGING;
 export default function VideoCall(props:any){
     const [privateKey,setPrivatKey]  = useState()
     const account = useAccount()
+    const [signer,setSigner] = useState()
+
     const [activeChat,setActiveChat] = useState()
     const [isMicMuted, setMicMuted] = useState(false);
     const [isCameraOff, setCameraOff] = useState(false);
@@ -187,8 +189,7 @@ export default function VideoCall(props:any){
 
     // initialize video call object
     useEffect(() => {
-      const provider = new providers.Web3Provider(window.ethereum)
-      const signer = provider.getSigner(account?.address) 
+     
         if (!signer || !props.address) return;
     
         (async () => {
@@ -214,7 +215,20 @@ export default function VideoCall(props:any){
             setData,
           });
         })();
-      }, [account?.address, props.address]);
+      }, [account?.address, props.address,signer]);
+
+      useEffect(()=>{ 
+        async function setup()
+        {
+          const provider = new providers.Web3Provider(window.ethereum)
+          const _signer = provider.getSigner(account.address) 
+          setSigner(_signer)
+         
+        }  
+         
+        if(account?.address)
+          setup()
+      },[account?.address])
 
         // after setRequestVideoCall, if local stream is ready, we can fire the request()
   useEffect(() => {
@@ -339,13 +353,13 @@ export default function VideoCall(props:any){
 )}
           <div className="mb-4">
             <div className="flex space-x-2 w-full">
-              <div className="">
+              <div className="w-1/2">
                 <div  >
                   <VideoPlayer  stream={data.local.stream} isMuted={true}/>
                   <div className="mt-2 text-center text-white">You</div>
                 </div>
               </div>
-              <div className="">
+              <div className="w-1/2">
                 <div >
                   <VideoPlayer stream={data.incoming[0].stream} isMuted={false} />
                   <div className="mt-2 text-center text-white">{props?.personTocall ? props.personTocall: "Other Caller"}</div>

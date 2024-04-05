@@ -138,6 +138,8 @@ setShow(false);
     const _tag = await queryPetById(tagId)
     if(_tag.length == 0 )
     {
+      setContacts([])
+      setTag(null)
       setNotificationDescription("Tag ID not found")
       setDialogType(2) 
       setNotificationTitle("Search Tag")

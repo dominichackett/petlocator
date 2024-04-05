@@ -14,6 +14,7 @@ import Mint from '@/components/Mint/Mint'
 import { queryProfile } from '../tableland/tableland'
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
+import Notification from '@/components/Notification/Notification'
 import {
     Bars3Icon,
     BellIcon,
@@ -61,17 +62,39 @@ export default function Dashboard() {
   const profilePicRef = useRef("");
    
   const account = useAccount()
-
+// NOTIFICATIONS functions
+const [notificationTitle, setNotificationTitle] = useState();
+const [notificationDescription, setNotificationDescription] = useState();
+const [dialogType, setDialogType] = useState(1);
+const [show, setShow] = useState(false);
+const close = async () => {
+setShow(false);
+};
   const menuClicked = (item:any) =>{
      setSelectedMenuItem(item)
   }
 
-  const addPetClicked = (value:any) =>{
+  const addPetClicked = (value:any,saved:any) =>{
     setShowPetForm(value)
+    if(saved)
+    {
+     setNotificationTitle("Add Pet")  
+    setNotificationDescription("Pet Tag Successfully Created")
+    setDialogType(1) //Success
+    setShow(true)    
+  }
   }
   
-  const addContactClicked = (value:any) =>{
+  const addContactClicked = (value:any,saved:any) =>{
     setShowContactForm(value)
+    if(saved)
+    {
+      setNotificationTitle("Add Contact")  
+
+      setNotificationDescription("Contact Successfully Created")
+      setDialogType(1) //Success
+      setShow(true)    
+    }
   }
 
   useEffect(()=>{
@@ -195,7 +218,7 @@ export default function Dashboard() {
    {(selectedMenuItem=="Contacts" && showContactForm== true) && <AddContact showcontactform={addContactClicked}/>}
    {(selectedMenuItem=="Messages") &&<Messages />}
    {(selectedMenuItem=="Profile") &&<Profile />}
-   {(selectedMenuItem=="Video Calls") &&<VideoCall />}
+   {(selectedMenuItem=="Video Calls") &&<VideoCall address={account?.address}/>}
    {(selectedMenuItem=="Mint USDC Tokens") &&<Mint />}
 
 
@@ -208,6 +231,13 @@ export default function Dashboard() {
     
 
       {/* Footer */}
+      <Notification
+        type={dialogType}
+        show={show}
+        close={close}
+        title={notificationTitle}
+        description={notificationDescription}
+      />
      <Footer />
      </main>
 

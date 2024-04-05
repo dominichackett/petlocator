@@ -94,6 +94,8 @@ export default function AddPet(props:any) {
     setShow(true)     
    
 
+
+
   
     try 
     { 
@@ -145,11 +147,8 @@ export default function AddPet(props:any) {
 
        await insertPet(tagId.toString(),account.address,data.name,data.pettype,url,data.description)
 
-       setNotificationDescription("Pet Tag Successfully Created")
-       setDialogType(1) //Success
-       setShow(true)    
        setIsSaving(false)
- 
+       props.showpetform(false,true) 
     }catch(error){
 
       setNotificationTitle("Add Pet")
@@ -273,7 +272,7 @@ export default function AddPet(props:any) {
           <button
             type="button"
             className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-my-blue"
-            onClick={()=>props.showpetform(false)}
+            onClick={()=>props.showpetform(false,false)}
           >
             Cancel
           </button>
