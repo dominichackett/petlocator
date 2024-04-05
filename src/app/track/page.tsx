@@ -8,6 +8,8 @@ import Footer from '@/components/Footer/Footer'
 import Notification from '@/components/Notification/Notification'
 import { queryPetById ,queryContactsByPet} from '../tableland/tableland'
 import VideoCall from '@/components/VideoCall/VideoCall'
+import Chat from '@/components/Messages/Chat'
+import { sendNotifications } from '@/utils/push'
 import {
   
   CheckIcon,
@@ -146,12 +148,23 @@ setShow(false);
     setDialogType(1) 
     setNotificationTitle("Search Tag")
     setShow(true)
-    setTag(_tag)
+    setTag(_tag[0])
     setTagFound(true)
     setTagQueried(true)
     setPreview(_tag[0].photo)
     const _contacts = await queryContactsByPet(tagId)
     setContacts(_contacts)
+    
+    let contactList = []
+    for(const _contact in _contacts)
+    {
+       contactList.push(`eip155:5:${_contacts[_contact].id}`)
+    }
+  
+    const _date = new Date()
+    //Send Push Notification
+    await sendNotifications(`Tag ID: ${tagId} Scanned for ${_tag[0].name}`,`Date: ${_date.toDateString()}`,contactList)
+
   
   }
 
@@ -301,7 +314,7 @@ setShow(false);
                   id="tagid"
                   name="tagid"
                   autoComplete="tagid"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  className="p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 />
                   
               </div>
@@ -331,24 +344,24 @@ setShow(false);
     </div>
  
 <div className="mb-8">
-  {(account?.address && personToMessage && addressToMessage )&& <EmergencyChat address={account?.address} personToMessage={personToMessage} addressToMessage={addressToMessage} />}
-<h1 className="mb-4 text-3xl font-bold tracking-tight text-white">App Emergency Contacts</h1>
+  {(account?.address && personToMessage && addressToMessage )&& <Chat address={account?.address} personToMessage={personToMessage} addressToMessage={addressToMessage} />}
+<h1 className="mb-4 text-3xl font-bold tracking-tight text-white">Emergency Contacts</h1>
 
       {contacts.map((item, index) => (
         <div
           key={index}
           className="mb-4 text-white rounded-md bg-[#4E4C64] flex justify-between rounded-md py-4 px-8 border border-dashed border-[#A1A0AE] bg-[#353444]"
         >
-          <span>{item.contact}</span>
+          <span>{item.firstname} {item.lastname}</span>
           <div className="flex space-x-4">
             {/* Video Call Button */}
-            <button className="flex items-center p-2 bg-red-500 text-white rounded-md" onClick={()=>setCallData(`${item.firstname} ${item.lastname}`,item.ethaddress)}>
+            <button className="flex items-center p-2 bg-red-500 text-white rounded-md" onClick={()=>setCallData(`${item.firstname} ${item.lastname}`,item.id)}>
               <VideoCameraIcon className="w-5 h-5 mr-2" /> {/* Adjust icon size and spacing */}
               Video Call
             </button>
 
             {/* Message Button */}
-            <button className="flex items-center p-2 bg-green-500 text-white rounded-md" onClick={()=>setMessageData(`${item.firstname} ${item.lastname}`,item.ethaddress)}>
+            <button className="flex items-center p-2 bg-green-500 text-white rounded-md" onClick={()=>setMessageData(`${item.firstname} ${item.lastname}`,item.id)}>
               <ChatBubbleLeftIcon className="w-5 h-5 mr-2" /> {/* Adjust icon size and spacing */}
               Message
             </button>

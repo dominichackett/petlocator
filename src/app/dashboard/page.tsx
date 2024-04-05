@@ -10,6 +10,7 @@ import AddContact from '@/components/AddContact/AddContact'
 import Messages from '@/components/Messages/Messages'
 import Profile from '@/components/Profile/Profile'
 import VideoCall from '@/components/VideoCall/VideoCall'
+import Mint from '@/components/Mint/Mint'
 import { queryProfile } from '../tableland/tableland'
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
@@ -36,7 +37,7 @@ import { disconnect } from 'process'
     { name: 'Messages', href: '#', icon: ChatBubbleLeftIcon, current: false },
     { name: 'Video Calls', href: '#', icon: VideoCameraIcon, current: false },
     { name: 'Profile', href: '#', icon: UserIcon, current: false },
-    { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
+    { name: 'Mint USDC Tokens', href: '#', icon: ChartPieIcon, current: false },
   ]
   const teams = [
    
@@ -195,6 +196,8 @@ export default function Dashboard() {
    {(selectedMenuItem=="Messages") &&<Messages />}
    {(selectedMenuItem=="Profile") &&<Profile />}
    {(selectedMenuItem=="Video Calls") &&<VideoCall />}
+   {(selectedMenuItem=="Mint USDC Tokens") &&<Mint />}
+
 
 
 

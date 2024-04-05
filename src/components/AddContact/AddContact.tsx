@@ -1,14 +1,11 @@
 import {useForm  } from "react-hook-form";
 import {useState,useRef,useEffect} from 'react';
-import { PhotoIcon } from '@heroicons/react/24/solid'
 import Notification from "../Notification/Notification"
 import { providers } from 'ethers'
 
-import { Database } from "@tableland/sdk";
 import { useAccount } from 'wagmi'
 import { ethers } from "ethers";
-import { tagContractABI,tagContractAddress } from "@/contracts/contracts";
-import { uploadToIPFS } from "@/utils/fleek";
+import { tagContractABI,tagContractAddress,USDCAddress,USDCABI } from "@/contracts/contracts";
 import { insertContact ,queryPetsByOwner} from "@/app/tableland/tableland";
 export default function AddContact(props:any) {
 
@@ -93,16 +90,32 @@ export default function AddContact(props:any) {
       { 
         
         
-          setShow(true)
-       
-      
-          setNotificationTitle("Add Contact")
-         await insertContact(data.ethaddress,data.petid,account.address,data.firstname,dats.lastname,data.telehone)
+
+         const provider = new providers.Web3Provider(window.ethereum)
+         const _signer = provider.getSigner(account.address) 
+ 
+        console.log(data)
+
+ 
+        const USDCcontract = new ethers.Contract(USDCAddress, USDCABI, _signer);
+
+        const contract = new ethers.Contract(tagContractAddress, tagContractABI, _signer);
+
+          let tx = await USDCcontract.callStatic.approve(tagContractAddress,ethers.utils.parseEther("10"))
+          let tx1 = await USDCcontract.approve(tagContractAddress,ethers.utils.parseEther("10")) 
+          await tx1.wait()
+
+          const tx2 = await contract.callStatic.addEmergencyContacts(data.petid,data.ethaddress,"USDC");
+          const transaction = await contract.addEmergencyContacts(data.petid,data.ethaddress,"USDC");
+          await transaction.wait(); // Wait for the transaction to be mined
+
+          await insertContact(data.ethaddress,data.petid,account.address,data.firstname,data.lastname,data.telephone)
   
          setNotificationDescription("Contact Successfully Created")
          setDialogType(1) //Success
          setShow(true)    
          setIsSaving(false)
+         props.showcontactform(false)
    
       }catch(error){
   

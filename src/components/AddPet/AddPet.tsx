@@ -112,6 +112,7 @@ export default function AddPet(props:any) {
       const _signer = provider.getSigner(account.address) 
  
        const result = await  uploadToIPFS(filename.current,selectedFile)
+       //console.log(await result.json())
        const cid =result.cid.toV1().toString()
        const url = `https://${cid}.ipfs.cf-ipfs.com`
        

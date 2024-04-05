@@ -1,22 +1,24 @@
- export const tagContractAddress ='0x5d53A22017bb4534c0618fBF172A09C667c3F814'
+ export const tagContractAddress ='0x36350b927DaBf60B7A13835592269Ce9dF7BdDbd'
 
  export const tagContractABI = ['function addUser(string memory _pname, string memory _oname, string memory _ptype, string memory _cid) public',
 'function addDiagnosis (address _user , uint _medicalHistoryId , string memory _uriOfDiagnosis) public',
 'function addMemory (address _user , uint _memoryId , string memory _uriOfMemory) public',
+'function addEmergencyContacts( uint _tagId, address _contact1,  string memory currency) external',
 'function updateTokenURI( uint tokenId, string memory URI) public',
 'event NewTag (address indexed user,uint indexed tagId, address indexed account)',
- 'event NewECAdded (uint indexed tagId,address contact1,uint phoneNumber1,address contact2,uint phoneNumber2)',
+ 'event NewECAdded (uint indexed tagId,address contact1)',
  'event NewMedicalHistoryAdded (uint indexed tagId,address indexed user,uint indexed medicalid,address account)',
   'event NewMemoryAdded (uint indexed tagId,address indexed user,uint indexed memoryid,address account)'
 ]
 
 
-export const USDCAddress = "0x9aa7fEc87CA69695Dd1f879567CcF49F3ba417E2";
+export const USDCAddress = "0xd2dBA47c76592322DBdD9AF12278e24ef11C940D";
 export const USDCABI = [
   // 'function transfer(address to, uint256 amount) external returns (bool)',
   "function approve(address spender, uint256 amount) public",
+  "function mint() public"
 ];
 
 
-//PET TAG 0x0C5010150461d2640052E1d2e5BfaFf3701278d6
-//PET Record 0x898F4b52A4F98dCE12E895B8894177d75d571A0C
+//PET TAG 0xDA10147Ccd846046b4516f316f3A686Be07C1b32
+//PET Record 0xAAeB19494E35EFBAdF1B4E65407A28ab1824c358

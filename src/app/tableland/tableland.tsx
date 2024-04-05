@@ -18,7 +18,7 @@ const db = new Database({signer})
 console.log(wallet.address)
 export const queryContacts = async(owner:string)=>{
     try {
-    const { results } = await db.prepare(`SELECT firstname,lastname,telephone,ethaddress,${petsTable}.name FROM ${contactsTable} join ${petsTable} on petid = ${petsTable}.id where owner='${owner}'  order by lastname,firstname;`).all();
+    const { results } = await db.prepare(`SELECT ${contactsTable}.id, firstname,lastname,telephone,${petsTable}.name FROM ${contactsTable} join ${petsTable} on petid = ${petsTable}.id where ${contactsTable}.owner='${owner}'  order by lastname,firstname;`).all();
 
    return results;
 }
@@ -32,7 +32,7 @@ catch(error:any)
 
 export const queryContactsByPet = async(petId:string)=>{
   try {
-  const { results } = await db.prepare(`SELECT firstname,lastname,telephone,ethaddress,${petsTable}.name FROM ${contactsTable} join ${petsTable} on petid = ${petsTable}.id where petid='${petId}'  order by lastname,firstname;`).all();
+  const { results } = await db.prepare(`SELECT ${contactsTable}.id, firstname,lastname,telephone,${petsTable}.name FROM ${contactsTable} join ${petsTable} on petid = ${petsTable}.id where petid='${petId}'  order by lastname,firstname;`).all();
 
  return results;
 }

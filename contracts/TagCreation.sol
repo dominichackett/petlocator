@@ -35,9 +35,7 @@ contract TagCreation is ReentrancyGuard, ERC721Holder {
 
     struct EmergencyContact {
         address contact1;
-        uint phoneNumber1;
-        address contact2;
-        uint phoneNumber2;
+        
     }
 
     struct Token {
@@ -54,10 +52,7 @@ contract TagCreation is ReentrancyGuard, ERC721Holder {
     event NewECAdded (
     
         uint indexed tagId,
-        address contact1,
-        uint phoneNumber1,
-        address contact2,
-        uint phoneNumber2
+        address contact1
     );
 
     event NewMedicalHistoryAdded (
@@ -110,10 +105,10 @@ contract TagCreation is ReentrancyGuard, ERC721Holder {
 
     }
 
-    function addEmergencyContacts( uint _tagId, address _contact1, uint _phoneNumber1, address _contact2, uint _phoneNumber2, string memory currency) external {
+    function addEmergencyContacts( uint _tagId, address _contact1,  string memory currency) external {
 
         require(tagIdMapping[_tagId] == msg.sender, "User doesnt hold the tag ID");
-        EContacts[_tagId] = EmergencyContact(_contact1,_phoneNumber1,_contact2,_phoneNumber2);
+        EContacts[_tagId] = EmergencyContact(_contact1);
 
         IERC20 tokenContract_ = tokens[currency].tokenAddress;
 
@@ -122,7 +117,7 @@ contract TagCreation is ReentrancyGuard, ERC721Holder {
         tokenContract_.transferFrom(msg.sender, address(this), charges);
         balance[address(this)][currency] = charges;
 
-        emit NewECAdded(_tagId,_contact1,_phoneNumber1,_contact2,_phoneNumber2);
+        emit NewECAdded(_tagId,_contact1);
 
 
     }
