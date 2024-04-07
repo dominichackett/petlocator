@@ -24,6 +24,9 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 Pet Locator is a comprehensive decentralized application (dApp) designed to streamline the process of reuniting lost pets with their owners. Utilizing blockchain technology and unique pet tags, Pet Locator facilitates quick communication between finders and pet owners through messaging and video calls. The platform features an intuitive dashboard where users can register their pets' information securely, ensuring swift responses in case of emergencies. Additionally, users can input trusted contacts who can assist in the event of a pet going missing, further strengthening the safety net for their beloved companions. With user-friendly interfaces and seamless navigation, Pet Locator prioritizes simplicity and efficiency, offering peace of mind to pet owners worldwide. Join Pet Locator today and experience the reassurance of knowing your pet is always within reach.
 
+## Demo Links
+https://petlocator-tawny.vercel.app/
+https://petlocator.on-fleek.app
 
 ## How it was built
 
