@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { Dialog, Disclosure } from '@headlessui/react'
-import { Bars3Icon, MinusSmallIcon, PlusSmallIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import {  Disclosure } from '@headlessui/react'
+import {  MinusSmallIcon, PlusSmallIcon } from '@heroicons/react/24/outline'
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
 import {
