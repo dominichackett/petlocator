@@ -1,7 +1,7 @@
 import { FleekSdk, ApplicationAccessTokenService } from '@fleekxyz/sdk';
 
 const applicationService = new ApplicationAccessTokenService({
-    clientId: process.env.NEXT_PUBLIC_FLEEK_CLIENTID,
+    clientId: process.env.NEXT_PUBLIC_FLEEK_CLIENTID
 })
 
 const fleekSdk = new FleekSdk({ accessTokenService: applicationService })

@@ -244,7 +244,7 @@ setShow(false);
                 Find your furry friend, fast!
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-300">
-                Never lose track of your beloved pet again with our advanced pet locator technology. Whether they've wandered off or simply playing hide-and-seek, our system ensures a quick and reliable way to bring them home safely.
+                Never lose track of your beloved pet again with our advanced pet locator technology. Whether they&apos;ve wandered off or simply playing hide-and-seek, our system ensures a quick and reliable way to bring them home safely.
                 </p>
                
               </div>
